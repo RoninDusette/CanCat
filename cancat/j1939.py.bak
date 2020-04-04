@@ -1,7 +1,7 @@
-import queue
+import Queue
 import cancat
 import struct
-from .J1939db import *
+from J1939db import *
 from cancat import *
 
 import vstruct
@@ -82,8 +82,7 @@ def pf_c9(idx, ts, arbtup, data, j1939):
     
     return "Request2: %s %s" % (req,  usexferpgn)
 
-def pf_ea(idx, ts, xxx_todo_changeme, data, j1939):
-    (prio, edp, dp, pf, ps, sa) = xxx_todo_changeme
+def pf_ea(idx, ts, (prio, edp, dp, pf, ps, sa), data, j1939):
     return "Request: %s" % (data[:3].encode('hex'))
 
 def pf_eb(idx, ts, arbtup, data, j1939):
@@ -246,23 +245,20 @@ def pf_ec(idx, ts, arbtup, data, j1939):
 
     return 'TP.CM_%.2x' % cb
 
-def pf_ee(idx, ts, xxx_todo_changeme1, data, j1939):
-    (prio, edp, dp, pf, ps, sa) = xxx_todo_changeme1
+def pf_ee(idx, ts, (prio, edp, dp, pf, ps, sa), data, j1939):
     if ps == 255 and sa == 254:
         return 'CANNOT CLAIM ADDRESS'
     
     addrinfo = parseName(data).minrepr()
     return "Address Claim: %s" % addrinfo
 
-def pf_ef(idx, ts, xxx_todo_changeme2, data, j1939):
-    (prio, edp, dp, pf, ps, sa) = xxx_todo_changeme2
+def pf_ef(idx, ts, (prio, edp, dp, pf, ps, sa), data, j1939):
     if dp:
         return 'Proprietary A2'
 
     return 'Proprietary A1'
     
-def pf_ff(idx, ts, xxx_todo_changeme3, data, j1939):
-    (prio, edp, dp, pf, ps, sa) = xxx_todo_changeme3
+def pf_ff(idx, ts, (prio, edp, dp, pf, ps, sa), data, j1939):
     pgn = "%.2x :: %.2x:%.2x - %s" % (sa, pf,ps, data.encode('hex'))
     return "Proprietary B %s" % pgn
 
@@ -469,7 +465,7 @@ class J1939(cancat.CanInterface):
         CanInterface.__init__(self, port=port, baud=baud, verbose=verbose, cmdhandlers=cmdhandlers, comment=comment, load_filename=load_filename, orig_iface=orig_iface)
 
         # setup the message handler event offload thread
-        self._mhe_queue = queue.Queue()
+        self._mhe_queue = Queue.Queue()
         mhethread = threading.Thread(target=self._mhe_runner)
         mhethread.setDaemon(True)
         mhethread.start()
@@ -575,8 +571,8 @@ class J1939(cancat.CanInterface):
                 pfhandler, idx, ts, arbtup, data = worktup
                 pfhandler(self, idx, ts, arbtup, data)
 
-            except Exception as e:
-                print("MsgHandler ERROR: %r (%r)" % (e, worktup))
+            except Exception, e:
+                print "MsgHandler ERROR: %r (%r)" % (e, worktup)
                 if self.verbose:
                     sys.excepthook(*sys.exc_info())
 
@@ -778,7 +774,7 @@ class J1939(cancat.CanInterface):
         if start_msg == None:
             start_msg = self._last_recv_idx
 
-        print("J1939recv_tp: Searching for response at or after msg idx: %d" % start_msg)
+        print "J1939recv_tp: Searching for response at or after msg idx: %d" % start_msg
         msg = self.recvRealExtMsg(sa, da, pgn2, pgn1, pgn0, start_msg)
         if msg == None:
             return None
@@ -849,9 +845,9 @@ class J1939(cancat.CanInterface):
             try:
                 msgrepr = self._reprCanMsg(*msg)
                 if msgrepr != cancat.DONT_PRINT_THIS_MESSAGE:
-                    print(msgrepr)
-            except Exception as e:
-                print(e)
+                    print msgrepr
+            except Exception, e:
+                print e
         '''
         example (from start of ECU):
         00000000 1545142410.990 pri/edp/dp: 6/0/0, PG: ea ff  Source: fe  Len: 03, Data: 00ee00              Request

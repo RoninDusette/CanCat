@@ -70,13 +70,13 @@ SVC_WRITE_MEMORY_BY_ADDRESS =               0x3d
 SVC_TESTER_PRESENT =                        0x3e
 SVC_CONTROL_DTC_SETTING =                   0x85
 
-UDS_SVCS = { v:k for k,v in list(globals().items()) if k.startswith('SVC_') }
+UDS_SVCS = { v:k for k,v in globals().items() if k.startswith('SVC_') }
 
-POS_RESP_CODES = { (k|0x40) : "OK_" + v.lower() for k,v in list(UDS_SVCS.items()) }
+POS_RESP_CODES = { (k|0x40) : "OK_" + v.lower() for k,v in UDS_SVCS.items() }
 POS_RESP_CODES[0] = 'Success'
 
 NEG_RESP_REPR = {}
-for k,v in list(NEG_RESP_CODES.items()):
+for k,v in NEG_RESP_CODES.items():
     NEG_RESP_REPR[k] = 'ERR_' + v
 
 RESP_CODES = {}
@@ -126,12 +126,12 @@ class UDS(object):
 
             if svc_resp == svc + 0x40:
                 if self.verbose: 
-                    print("Positive Response!")
+                    print "Positive Response!"
 
             negresprepr = NEG_RESP_CODES.get(errcode)
             if negresprepr != None and svc_resp != svc + 0x40:
                 if self.verbose > 1: 
-                    print(negresprepr + "\n")
+                    print negresprepr + "\n"
                 # TODO: Implement getting final message if ResponseCorrectlyReceivedResponsePending is received
                 if errcode != 0x78: # Don't throw an exception for ResponseCorrectlyReceivedResponsePending
                     raise NegativeResponseException(errcode, svc, msg)
@@ -171,7 +171,7 @@ class UDS(object):
         self.TesterPresent = False
         self.t.join(5.0)
         if self.t.isAlive():
-            print("Error killing Tester Present thread")
+            print "Error killing Tester Present thread"
         else:
             del self.t
 
@@ -213,13 +213,13 @@ class UDS(object):
         try:
             pack_fmt_str += {1:"B", 2:"H", 4:"I"}.get(addr_format >> 4) + {1:"B", 2:"H", 4:"I"}.get(addr_format & 0xf)
         except TypeError:
-            print("Cannot parse addressAndLengthFormatIdentifier", hex(addr_format))
+            print "Cannot parse addressAndLengthFormatIdentifier", hex(addr_format)
             return None
         msg = self.xmit_recv("\x34" + struct.pack(pack_fmt_str, data_format, addr_format, addr, len(data)), extflag=self.extflag, service = 0x74)
 
         # Parse the response
         if ord(msg[0]) != 0x74:
-            print("Error received: {}".format(msg.encode('hex')))
+            print "Error received: {}".format(msg.encode('hex'))
             return msg
         max_txfr_num_bytes = ord(msg[1]) >> 4 # number of bytes in the max tranfer length parameter
         max_txfr_len = 0 
@@ -239,10 +239,10 @@ class UDS(object):
 
             # error checking
             if msg is not None and ord(msg[0]) == 0x7f and ord(msg[2]) != 0x78:
-                print("Error sending data: {}".format(msg.encode('hex')))
+                print "Error sending data: {}".format(msg.encode('hex'))
                 return None
             if msg is None:
-                print("Didn't get a response?")
+                print "Didn't get a response?"
                 data_idx -= max_txfr_len - 2
                 block_idx -= 1
                 if block_idx == 0:
@@ -302,12 +302,12 @@ class UDS(object):
             output.append(msg)
 
             if len(msg) and msg[0] != '\x76':
-                print("FAILURE TO DOWNLOAD ALL.  Returning what we have so far (including error message)")
+                print "FAILURE TO DOWNLOAD ALL.  Returning what we have so far (including error message)"
                 return output
 
         msg = self._do_Function(SVC_REQUEST_TRANSFER_EXIT)
         if len(msg) and msg[0] != '\x77':
-            print("FAILURE TO EXIT CLEANLY.  Returning what we received.")
+            print "FAILURE TO EXIT CLEANLY.  Returning what we received."
 
         return output
 
@@ -349,14 +349,14 @@ class UDS(object):
                 except KeyboardInterrupt:
                     raise
 
-                except Exception as e:
+                except Exception, e:
                     if self.verbose > 1:
-                        print(e)
+                        print e
 
                 time.sleep(delay)
 
         except KeyboardInterrupt:
-            print("Stopping Scan during DID 0x%x " % x)
+            print "Stopping Scan during DID 0x%x " % x
             return success
 
         return success
@@ -371,7 +371,7 @@ class UDS(object):
         if msg is None:
             return msg
         if(ord(msg[0]) == 0x7f):
-            print("Error getting seed:", msg.encode('hex'))
+            print "Error getting seed:", msg.encode('hex')
 
         else:
             seed = msg[2:]
@@ -389,7 +389,7 @@ class UDS(object):
             @secret = a SecurityAccess algorithm specific key
            Returns the key, as a string of key bytes.
         """
-        print("Not implemented in this class")
+        print "Not implemented in this class"
         return 0
 
 
@@ -408,12 +408,12 @@ def printUDSSession(c, tx_arbid, rx_arbid=None, paginate=45):
         svc = ord(isotpmsg[0])
         mtype = (RESP_CODES, UDS_SVCS)[arbid==tx_arbid].get(svc, '')
 
-        print("Message: (%s:%s) \t %-30s %s" % (count, msgs_idx, isotpmsg.encode('hex'), mtype))
+        print "Message: (%s:%s) \t %-30s %s" % (count, msgs_idx, isotpmsg.encode('hex'), mtype)
         msgs_idx += count
 
         if paginate:
             if (linect % paginate)==0:
-                input("%x)  PRESS ENTER" % linect)
+                raw_input("%x)  PRESS ENTER" % linect)
 
         linect += 1
         

@@ -35,10 +35,10 @@ if __name__ == "__main__":
     # Make it easy to find modules in CWD
     sys.path.append('.')
 
-    interfaces = [iface[:-9] for iface in list(globals().keys()) if iface.endswith('Interface')]
+    interfaces = [iface[:-9] for iface in globals().keys() if iface.endswith('Interface')]
     interface_names = ', '.join(interfaces)
 
-    bauds = [baud[4:-3] for baud in list(globals().keys()) if baud.startswith('CAN_') and baud.endswith('BPS')]
+    bauds = [baud[4:-3] for baud in globals().keys() if baud.startswith('CAN_') and baud.endswith('BPS')]
     baud_nums = ', '.join(bauds)
 
     parser = argparse.ArgumentParser()
@@ -65,4 +65,4 @@ if __name__ == "__main__":
 
     results = interactive(ifo.port, intro=intro, InterfaceClass=interface, load_filename=ifo.filename, can_baud=baud_val)
     if results == -1:
-        print("Error.  Try '-h' from CLI for help.")
+        print "Error.  Try '-h' from CLI for help."

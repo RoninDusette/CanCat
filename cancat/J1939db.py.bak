@@ -25521,7 +25521,7 @@ J1939PGNdb = {
             "Label": "XFER",
             "Name": "Transfer",
             "PGNLength": "9 to 1785 bytes (multipacket supported)",
-            "Rate": "In response to a Request2 PGN with \\u201cUse Transfer PGN\\u201d = 01",
+            "Rate": "In response to a Request2 PGN with \u201cUse Transfer PGN\u201d = 01",
             "SPNs": [
                 2553,
                 2552,
@@ -29062,7 +29062,7 @@ J1939PGNdb = {
         },
         64865: {
             "Label": "DM39",
-            "Name": "Cumulative Continuous MI \\u2013 System (HCMI)",
+            "Name": "Cumulative Continuous MI \u2013 System (HCMI)",
             "PGNLength": "",
             "Rate": "",
             "SPNs": []
@@ -29076,7 +29076,7 @@ J1939PGNdb = {
         },
         64867: {
             "Label": "DM37",
-            "Name": "Harmonized Roadworthiness \\u2013 System (HRWS)",
+            "Name": "Harmonized Roadworthiness \u2013 System (HRWS)",
             "PGNLength": "",
             "Rate": "",
             "SPNs": []
