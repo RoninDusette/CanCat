@@ -1,3 +1,6 @@
+# NOTE: This is forked from the original author and just converted Python 3. It's not stable, but it had to be done 
+# for my own purposes. :) 
+
 # CanCat
 CanCat is an open source multi-purpose tool for interacting and experimenting with Controller Area Networks (CAN), such as those that are often used in cars, building automation, etc. 
 
